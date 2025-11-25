@@ -30,3 +30,6 @@ app.listen(PORT, () => {
   console.log(`食光机后端已启动：http://localhost:${PORT}`);
   console.log(`前端访问：http://localhost:${PORT}`);
 });
+// server.js 最后几行，加入这句（放在所有路由之后）
+const pageRoutes = require('./routes/pages');  // ← 新增
+app.use('/', pageRoutes);                      // ← 新增（优先级最高）
