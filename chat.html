@@ -15,13 +15,14 @@
   main{margin-top:90px;padding:2rem 5%;min-height:100vh;display:flex;flex-direction:column;}
   .chat-container{max-width:900px;margin:0 auto;background:white;border-radius:24px;box-shadow:0 15px 40px rgba(168,192,255,.2);flex:1;display:flex;flex-direction:column;}
   .chat-messages{flex:1;padding:2rem;overflow-y:auto;}
-  .message{padding:1rem 1.5rem;margin:0.8rem 0;border-radius:20px;max-width:80%;word-wrap:break-word;}
+  .message{padding:1rem 1.5rem;margin:0.8rem 0;border-radius:20px;max-width:80%;word-wrap:break-word;line-height:1.6;}
   .user{background:var(--accent);color:white;align-self:flex-end;}
   .ai{background:#f0e8ff;color:#4a4a68;align-self:flex-start;}
   .input-area{display:flex;padding:1rem;background:#f9f5ff;border-top:1px solid #eee;}
   #userInput{flex:1;padding:1rem;border-radius:50px;border:1px solid #ddd;outline:none;font-size:1rem;}
-  button.send{background:var(--accent);color:white;border:none;width:50px;height:50px;border-radius:50%;margin-left:1rem;cursor:pointer;}
+  button.send{background:var(--accent);color:white;border:none;width:50px;height:50px;border-radius:50%;margin-left:1rem;cursor:pointer;font-size:1.3rem;}
   .tip{background:#fff0f8;padding:1.5rem;border-radius:16px;margin:2rem;text-align:center;color:#666;}
+  .typing{display:flex;align-items:center;gap:8px;color:#999;font-size:0.9rem;}
   footer{background:#4a4a68;color:#ddd;padding:2rem;text-align:center;font-size:0.9rem;}
 </style>
 </head>
@@ -41,16 +42,18 @@
   <div class="chat-container">
     <div class="chat-messages" id="messages">
       <div class="message ai">
-        嗨，我是食光机的小助手～<br>这里是一个完全安全的空间，你可以把任何关于吃、情绪、体重、身体意象的想法都说出来，我不会评价你，只会陪着你。
+        嗨，我是食光机的小助手～<br>
+        这里是一个完全安全的空间，你可以把任何关于吃、情绪、体重、身体意象的想法都说出来，我不会评价你，只会陪着你。
       </div>
       <div class="tip">
-        ⚠️ AI 不能代替专业医生或心理咨询师。<br>
+        Warning: AI 不能代替专业医生或心理咨询师。<br>
         如有严重自伤念头或极端行为，请立刻前往医院或联系【寻求帮助】板块。
       </div>
     </div>
+
     <div class="input-area">
       <input type="text" id="userInput" placeholder="说点什么吧……比如“我刚刚又吃到很撑”" autocomplete="off">
-      <button class="send">➤</button>
+      <button class="send" id="sendBtn">Send</button>
     </div>
   </div>
 </main>
@@ -59,6 +62,67 @@
   <p>© 2025 食光机 Let's Eat · ED Healer</p>
 </footer>
 
+<script>
+  const messages = document.getElementById('messages');
+  const input = document.getElementById('userInput');
+  const sendBtn = document.getElementById('sendBtn');
 
+  function addMessage(text, type) {
+    const div = document.createElement('div');
+    div.className = `message ${type}`;
+    div.innerHTML = text.replace(/\n/g, '<br>');
+    messages.appendChild(div);
+    messages.scrollTop = messages.scrollHeight;
+  }
+
+  function showTyping() {
+    const typing = document.createElement('div');
+    typing.className = 'message ai typing';
+    typing.innerHTML = '食光机小助手正在思考 <span class="dot1">.</span><span class="dot2">.</span><span class="dot3">.</span>';
+    typing.id = 'typing';
+    messages.appendChild(typing);
+    messages.scrollTop = messages.scrollHeight;
+  }
+
+  function removeTyping() {
+    const typing = document.getElementById('typing');
+    if (typing) typing.remove();
+  }
+
+  async function sendMessage() {
+    const text = input.value.trim();
+    if (!text) return;
+
+    addMessage(text, 'user');
+    input.value = '';
+    showTyping();
+
+    try {
+      const res = await fetch('api.js', {  // 关键：只调用后端 api.js
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: text })
+      });
+
+      const data = await res.json();
+      removeTyping();
+
+      if (data.reply) {
+        addMessage(data.reply, 'ai');
+      } else {
+        addMessage('抱歉，我现在有点小卡顿…可以过一会儿再和我说吗？', 'ai');
+      }
+    } catch (err) {
+      removeTyping();
+      addMessage('网络好像出了点问题…可以稍后再试试吗？', 'ai');
+      console.error(err);
+    }
+  }
+
+  sendBtn.addEventListener('click', sendMessage);
+  input.addEventListener('keypress', e => {
+    if (e.key === 'Enter') sendMessage();
+  });
+</script>
 </body>
 </html>
