@@ -23,7 +23,7 @@ async function callAI(userMessage) {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model: 'MiniMax-M2',  // 官方推荐模型（支持 128K 上下文）
+        model: 'MiniMax-M2',  // 修复：指定官方模型（支持 128K 上下文）
         messages: [
           { role: 'system', content: SYSTEM_PROMPT },
           { role: 'user', content: userMessage }
@@ -35,23 +35,22 @@ async function callAI(userMessage) {
     });
 
     if (!res.ok) {
-      const errorData = await res.json();
+      const errorData = await res.json().catch(() => ({}));
       throw new Error(`Minimax API 错误: ${res.status} - ${errorData.error?.message || '未知错误'}`);
     }
 
     const data = await res.json();
-    
-    // Minimax 响应格式兼容 OpenAI，但可能有 <think> 标签（保留完整）
     let reply = data.choices?.[0]?.message?.content || "我暂时有点说不出话…可以过一会儿再和我说吗？";
     
-    // 如果启用了 reasoning_split，合并思考内容（可选）
-    // if (data.choices[0].message.reasoning_details) {
-    //   reply = data.choices[0].message.reasoning_details[0].text + '\n\n' + reply;
-    // }
+    // MiniMax 可能返回 <think> 标签（保留完整内容）
+    if (reply.includes('<think>')) {
+      // 可选：提取思考部分，但这里保留原样以保持自然
+      console.log('检测到思考标签，已保留');
+    }
     
     return reply;
   } catch (err) {
-    console.error('Minimax API 调用失败:', err);
+    console.error('Minimax API 调用失败:', err);  // 添加日志，便于调试
     return "抱歉，我现在有点小卡顿…可以过一会儿再和我说吗？（如果持续，请检查网络或联系支持）";
   }
 }
