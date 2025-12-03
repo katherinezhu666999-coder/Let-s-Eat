@@ -18,7 +18,7 @@ app.use(express.json({ limit: '10mb' }));
 app.use(loggerAndLimiter);
 
 // 路由
-app.use('/api', chatRouter);
+app.use('./config', chatRouter);
 
 // 静态文件（你的前端 html/css/js）
 app.use(express.static(path.join(__dirname, '../frontend'))); // 把前端文件放这里
