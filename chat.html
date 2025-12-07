@@ -98,17 +98,28 @@
     showTyping();
 
     try {
-      const res = await fetch('config.js', {  // 关键：只调用后端 config.js
+      const res = await fetch('https://yinli.one/v1/chat/completions', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: text })
+        headers: {
+          'Authorization': 'Bearer sk-miKjSaZV5d2oKWSqeRerNNgCPSc4KQZEUYOdqUkLoAIO7r8s',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          model: "gpt-4o",
+          messages: [
+            { role: "system", content: "你是食光机的小助手，一个温暖、共情、绝不评判的进食障碍陪伴AI。你只提供情绪陪伴和支持，绝不给出饮食建议、医疗建议或体重建议。如发现用户有严重自伤风险，请温和但坚定地引导其立即就医或联系专业热线。" },
+            { role: "user", content: text }
+          ],
+          temperature: 0.8,
+          max_tokens: 800
+        })
       });
 
       const data = await res.json();
       removeTyping();
 
-      if (data.reply) {
-        addMessage(data.reply, 'ai');
+      if (data.choices && data.choices[0].message.content) {
+        addMessage(data.choices[0].message.content.trim(), 'ai');
       } else {
         addMessage('抱歉，我现在有点小卡顿…可以过一会儿再和我说吗？', 'ai');
       }
