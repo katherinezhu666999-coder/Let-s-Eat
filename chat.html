@@ -98,10 +98,10 @@
     showTyping();
 
     try {
-      const res = await fetch('https://yinli.one/v1', {
+      const res = await fetch('https://api.minimaxi.com/v1/chat/completions  ', {
         method: 'POST',
         headers: {
-          'Authorization': 'Bearer sk-miKjSaZV5d2oKWSqeRerNNgCPSc4KQZEUYOdqUkLoAIO7r8s',
+          'Authorization': 'Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJHcm91cE5hbWUiOiJMTEwiLCJVc2VyTmFtZSI6IkxMTCIsIkFjY291bnQiOiIiLCJTdWJqZWN0SUQiOiIxOTg2MjAzNzUzMjMyOTk5MDg5IiwiUGhvbmUiOiIxNzg2NDI4ODgzNSIsIkdyb3VwSUQiOiIxOTg2MjAzNzUzMjI0NjEwNDgxIiwiUGFnZU5hbWUiOiIiLCJNYWlsIjoiIiwiQ3JlYXRlVGltZSI6IjIwMjUtMTEtMDYgMTg6NDk6NTIiLCJUb2tlblR5cGUiOjEsImlzcyI6Im1pbmltYXgifQ.Sr_ecxgozmMF1jGKXXP8i2Y1pJ_fKXUy7LnCT7r9WxFlnrSeHZyVheU4c1KukZFB879eElsn0GhmBu3ScxqaAT-b09Oq12R9dbTaSIJdh2rLVjcBT2o0rd2PU5blLWCzxZGQFZ0YY2GMEHr8UO4BijINq0CC9ClQiwjuGX2nLuDHfdeCr1I-O3CzarmVS-8MEi9klNW9QeghBBwB8l9WE78QsVVIEMlRF31boWWMJrBP7KePst9UgBCzCqsNv5K2yPup24KPIYU-Ld0zSOZKzbFbvdC1XWk3uxczG390AbK8qZvwcPuzUK8mh_Emk6hi-mjLnBh83XuEK7ZSHiMcaQ',
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
